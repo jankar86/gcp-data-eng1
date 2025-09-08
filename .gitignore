@@ -1,0 +1,87 @@
+# -----------------------------
+# Terraform
+# -----------------------------
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+terraform.tfvars.json
+
+# Sensitive local files
+*.auto.tfvars
+*.tfvars
+*.tfplan
+
+# -----------------------------
+# Python (for Dataflow/Beam code)
+# -----------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+*.manifest
+*.spec
+
+# Virtual environments
+.env
+.venv
+venv/
+ENV/
+
+# -----------------------------
+# Jupyter / Notebooks
+# -----------------------------
+.ipynb_checkpoints
+*.ipynb~
+*.ipynb_convert
+
+# -----------------------------
+# Composer / Airflow
+# -----------------------------
+# Airflow logs & dags compiled locally
+logs/
+airflow.db
+unittests.cfg
+
+# -----------------------------
+# General
+# -----------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.bak
+*.tmp
+
+# -----------------------------
+# Output / data files
+# -----------------------------
+# Raw or test datasets (keep bucket/GCS as source of truth)
+*.csv
+*.tsv
+*.json
+*.parquet
+*.avro
+
+# -----------------------------
+# Secrets (never commit)
+# -----------------------------
+*.key.json
+*.pem
+*.crt
+*.csr
+*.p12

@@ -17,6 +17,7 @@ terraform.tfvars.json
 *.auto.tfvars
 *.tfvars
 *.tfplan
+env_vars.sh
 
 # -----------------------------
 # Python (for Dataflow/Beam code)

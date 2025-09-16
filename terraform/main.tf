@@ -6,7 +6,8 @@ resource "google_project_service" "services" {
     "storage.googleapis.com",
     "pubsub.googleapis.com",
     "dataflow.googleapis.com",
-    "composer.googleapis.com"
+    "composer.googleapis.com",
+    "cloudfunctions.googleapis.com"
   ])
   project = var.project_id
   service = each.key
@@ -14,7 +15,7 @@ resource "google_project_service" "services" {
 
 # Storage bucket for raw data
 resource "google_storage_bucket" "raw_data" {
-  project    = var.project_id
+  project                     = var.project_id
   name                        = "${var.project_id}-raw-data"
   location                    = var.region
   uniform_bucket_level_access = true

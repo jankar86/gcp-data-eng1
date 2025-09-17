@@ -3,8 +3,7 @@ PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
 REGION ?= us-central1
 STAGING_BUCKET ?= dataflow-staging-$(PROJECT_ID)
 TEMPLATE_SPEC ?= gs://$(STAGING_BUCKET)/flex_templates/dividends_spec.json
-#IMAGE ?= gcr.io/$(PROJECT_ID)/dividends-beam:latest
-IMAGE ?= us-central1-docker.pkg.dev/data-eng-d-091625/artreg/$(PROJECT_ID)/dividends-beam:latest
+IMAGE ?= us-central1-docker.pkg.dev/$(PROJECT_ID)/artreg/dividends-beam:latest
 
 .PHONY: help doctor build-pipeline push-pipeline publish-template pack-function tf-init tf-plan tf-apply upload-sample
 

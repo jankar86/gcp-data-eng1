@@ -5,4 +5,4 @@ docker build -t div-ingest ./app/.
 docker run --rm -it \
   -v $PWD/app/test-data:/data \
   div-ingest \
-  python main.py --bucket /data --object etrade-9153-8-22.csv --local
+  python main.py --bucket /data --object etrade-9153-7-3-24_6-5-25.csv --local

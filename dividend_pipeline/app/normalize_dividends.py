@@ -12,12 +12,21 @@ def make_row_hash(row: dict) -> str:
 
 
 def extract_account_number(path: str) -> str:
+    """
+    Extracts broker account number from E*TRADE CSV header lines.
+    Handles formats like:
+      For Account: #####9153
+      For Account:,#####9153
+    """
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
-        for line in f.readlines()[:10]:
-            if "For Account:" in line:
-                match = re.search(r"For Account:\s*#+(\d+)", line)
+        for i, line in enumerate(f.readlines()[:10], start=1):
+            if "account" in line.lower():
+                match = re.search(r"For\s*Account[:\s,]*([#\d]+)", line, flags=re.IGNORECASE)
                 if match:
-                    return match.group(1)
+                    acct = match.group(1).lstrip("#")  # strip leading hashes
+                    print(f"[DEBUG] Extracted broker_account: {acct} from line: {line.strip()}")
+                    return acct
+    print("[DEBUG] No broker_account found in file header")
     return ""
 
 
@@ -29,19 +38,17 @@ def to_decimal_series(series: pd.Series):
 def normalize_csv(path: str, source_file: str = None) -> pa.Table:
     """
     Normalize an E*TRADE dividend CSV into a canonical Arrow Table.
-    Handles messy headers by stripping whitespace and skipping bogus rows.
+    Ensures TransactionDate = DATE, numeric fields = NUMERIC, and broker_account extracted.
     """
 
     broker_account = extract_account_number(path)
 
     # --- Read CSV robustly ---
     raw = pd.read_csv(path, dtype=str, skip_blank_lines=True)
-    raw = raw.dropna(how="all")  # drop empty lines
-    raw.columns = raw.columns.str.strip()  # clean header spaces
+    raw = raw.dropna(how="all")
+    raw.columns = raw.columns.str.strip()
 
-    # If TransactionDate is not a column, maybe the first row is the header
     if "TransactionDate" not in raw.columns and raw.shape[0] > 1:
-        # Re-read skipping first row
         raw = pd.read_csv(path, dtype=str, skip_blank_lines=True, skiprows=1)
         raw = raw.dropna(how="all")
         raw.columns = raw.columns.str.strip()

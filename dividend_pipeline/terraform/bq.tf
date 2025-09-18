@@ -4,45 +4,35 @@ resource "google_bigquery_dataset" "finance" {
   delete_contents_on_destroy = true
 }
 
-# Schema is provided inline as JSON for convenience.
-# You can also split this into a separate .json file and use file().
-resource "google_bigquery_table" "dividends_fact" {
+resource "google_bigquery_table" "etrade_dividends" {
+  deletion_protection=false
   dataset_id = google_bigquery_dataset.finance.dataset_id
-  table_id   = "dividends_fact"
+  table_id   = "etrade_dividends"
 
+  # Partition on TransactionDate (payout date of dividends/transactions)
   time_partitioning {
     type  = "DAY"
-    field = "pay_date"
+    field = "TransactionDate"
   }
 
-  clustering = ["account_id", "symbol"]
+  # Cluster by broker_account + Symbol for query efficiency
+  clustering = ["broker_account", "Symbol"]
 
   schema = <<EOF
 [
   {"name":"row_hash","type":"STRING","mode":"REQUIRED"},
-  {"name":"account_id","type":"STRING"},
-  {"name":"broker","type":"STRING"},
   {"name":"broker_account","type":"STRING"},
-  {"name":"symbol","type":"STRING"},
-  {"name":"cusip","type":"STRING"},
-  {"name":"isin","type":"STRING"},
-  {"name":"security_name","type":"STRING"},
-  {"name":"event_type","type":"STRING"},
-  {"name":"ex_date","type":"DATE"},
-  {"name":"record_date","type":"DATE"},
-  {"name":"pay_date","type":"DATE"},
-  {"name":"quantity","type":"NUMERIC"},
-  {"name":"gross_amount","type":"NUMERIC"},
-  {"name":"withholding_tax","type":"NUMERIC"},
-  {"name":"fees","type":"NUMERIC"},
-  {"name":"net_amount","type":"NUMERIC"},
-  {"name":"currency","type":"STRING"},
-  {"name":"reinvested","type":"BOOL"},
-  {"name":"drip_price","type":"NUMERIC"},
-  {"name":"created_ts","type":"TIMESTAMP"},
+  {"name":"TransactionDate","type":"DATE"},
+  {"name":"TransactionType","type":"STRING"},
+  {"name":"SecurityType","type":"STRING"},
+  {"name":"Symbol","type":"STRING"},
+  {"name":"Quantity","type":"NUMERIC"},
+  {"name":"Amount","type":"NUMERIC"},
+  {"name":"Price","type":"NUMERIC"},
+  {"name":"Commission","type":"NUMERIC"},
+  {"name":"Description","type":"STRING"},
   {"name":"source_file","type":"STRING"},
-  {"name":"line_no","type":"INT64"},
-  {"name":"notes","type":"STRING"}
+  {"name":"created_ts","type":"TIMESTAMP"}
 ]
 EOF
 }

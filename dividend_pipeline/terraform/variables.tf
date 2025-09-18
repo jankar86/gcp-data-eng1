@@ -7,37 +7,35 @@ variable "region" {
     default = "us-central1" 
 }
 
+variable "location"   { 
+    type = string  
+    default = "US" 
+} # BigQuery location
 
-variable "raw_bucket" { 
+variable "dataset_id" { 
+    type = string 
+    default = "finance" 
+}
+
+# Path to your brokers.yaml to upload next to the service (optional convenience)
+variable "brokers_config_path" {
+  type        = string
+  default     = "./config/brokers.yaml"
+  description = "Local file path. If present, it's uploaded to the staging bucket at config/brokers.yaml"
+}
+
+variable "raw_bucket_name" { 
     type = string 
     default = null 
 }
 
-variable "dlq_bucket" { 
+variable "staging_bucket_name" { 
     type = string 
     default = null 
 }
 
-variable "staging_bucket" { 
-    type = string 
-    default = null 
-}
-
-variable "temp_bucket" { 
-    type = string 
-    default = null 
-}
-
-# Path to your function source directory (relative to terraform/ folder)
-variable "function_src_dir" {
-  type    = string
-  default = "../function_launcher"
-}
-
-
-locals {
-raw_bucket = coalesce(var.raw_bucket, "dividends-raw-${var.project_id}")
-dlq_bucket = coalesce(var.dlq_bucket, "dividends-dlq-${var.project_id}")
-staging_bucket = coalesce(var.staging_bucket, "dataflow-staging-${var.project_id}")
-temp_bucket = coalesce(var.temp_bucket, "dataflow-temp-${var.project_id}")
+# Your already-pushed image (see build/push commands at bottom)
+variable "container_image" {
+  type = string
+  # e.g. "us-central1-docker.pkg.dev/PROJECT/div/ingest-csv:1.0"
 }

@@ -1,27 +1,19 @@
-output "raw_bucket" { 
+output "raw_bucket"     { 
     value = google_storage_bucket.raw.name 
-    }
-
-output "dlq_bucket" { 
-    value = google_storage_bucket.dlq.name 
-    }
+}
 
 output "staging_bucket" { 
     value = google_storage_bucket.staging.name 
-    }
+}
 
-output "temp_bucket" { 
-    value = google_storage_bucket.temp.name 
-    }
+output "run_service_url" {
+  value = google_cloud_run_v2_service.ingest.uri
+}
 
-output "pubsub_topic" { 
-    value = google_pubsub_topic.gcs_raw.name 
-    }
+output "dataset" { 
+    value = google_bigquery_dataset.finance.dataset_id 
+}
 
-# output "function_name" { 
-#     value = google_cloudfunctions2_function.launcher.name 
-#     }
-
-output "bq_table" { 
-    value = "${google_bigquery_dataset.dividends.dataset_id}.${google_bigquery_table.fact_dividends.table_id}" 
-    }
+output "table"   { 
+    value = google_bigquery_table.dividends_fact.table_id 
+}

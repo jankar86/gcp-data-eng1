@@ -1,0 +1,7 @@
+flask==3.0.3
+google-cloud-storage==2.18.2
+google-cloud-bigquery==3.25.0
+pyarrow==17.0.0
+pandas==2.2.2
+chardet==5.2.0
+ruamel.yaml==0.18.6

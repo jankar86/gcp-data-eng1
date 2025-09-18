@@ -1,0 +1,82 @@
+profiles:
+  - name: fidelity_dividends_v1
+    when:
+      filename_glob: "**/Fidelity_*_Activity_*.csv"
+      header_contains: ["Symbol", "Description", "Activity Date", "Amount"]
+    reader:
+      type: csv
+      header: true
+      encoding: auto
+      delimiter: ","
+      decimal: "."
+      thousands: ","
+      date_formats: ["%m/%d/%Y"]
+      negative_formats: ["paren"]   # e.g. (1,234.56)
+    mapping:
+      # raw → canonical
+      columns:
+        "Account Number": broker_account
+        "Symbol": symbol
+        "CUSIP": cusip
+        "Description": security_name
+        "Activity Date": pay_date
+        "Quantity": quantity
+        "Amount": net_amount         # Fidelity often gives net; fees/tax often zeroed in export
+        "Currency": currency
+      constants:
+        broker: fidelity
+        event_type: CASH_DIVIDEND
+      derived:
+        # if DRIP detected by description string
+        reinvested: "contains(Description, 'Reinvestment')"
+      required: [broker_account, pay_date, net_amount]
+
+  - name: etrade_dividends_v2
+    when:
+      header_contains: ["Transaction Date","Description","Symbol","Price","Quantity","Amount"]
+    reader:
+      type: csv
+      header: true
+      delimiter: ","
+      date_formats: ["%m/%d/%Y"]
+      negative_formats: ["minus"]    # e.g. -12.34
+    mapping:
+      columns:
+        "Account Number": broker_account
+        "Symbol": symbol
+        "Description": security_name
+        "Transaction Date": pay_date
+        "Quantity": quantity
+        "Amount": gross_amount        # E*TRADE report usually has gross; taxes as separate rows
+        "Currency": currency
+      constants:
+        broker: etrade
+        event_type: CASH_DIVIDEND
+      rules:
+        # If description contains "Withholding", classify as tax row and flip sign to positive withholding_tax
+        - when: "contains(Description, 'Withholding')"
+          as_tax: true
+        - when: "contains(Description, 'ADR Fee')"
+          as_fee: true
+      required: [broker_account, pay_date, gross_amount]
+
+  - name: schwab_dividends_v1
+    when:
+      filename_glob: "**/Schwab_Transactions_*.csv"
+      header_contains: ["Date","Action","Symbol","Description","Amount"]
+    reader:
+      type: csv
+      header: true
+      delimiter: ","
+      date_formats: ["%m/%d/%Y"]
+    mapping:
+      columns:
+        "Account": broker_account
+        "Symbol": symbol
+        "Description": security_name
+        "Date": pay_date
+        "Amount": net_amount
+      constants:
+        broker: schwab
+        event_type: CASH_DIVIDEND
+      required: [broker_account, pay_date, net_amount]

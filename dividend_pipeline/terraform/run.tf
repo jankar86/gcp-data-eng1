@@ -1,5 +1,6 @@
 resource "google_cloud_run_v2_service" "ingest" {
   name     = "div-csv-ingest"
+  deletion_protection=false
   location = var.region
   ingress  = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER" # or "INGRESS_TRAFFIC_ALL" if you want public
   template {

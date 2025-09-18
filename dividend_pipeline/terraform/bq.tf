@@ -20,7 +20,7 @@ resource "google_bigquery_table" "etrade_dividends" {
 
   schema = <<EOF
 [
-  {"name":"row_hash","type":"STRING","mode":"REQUIRED"},
+  {"name":"row_hash","type":"STRING","mode":"NULLABLE"},
   {"name":"broker_account","type":"STRING"},
   {"name":"TransactionDate","type":"DATE"},
   {"name":"TransactionType","type":"STRING"},
